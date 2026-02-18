@@ -1,16 +1,13 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-export async function dbConnect(): Promise<typeof mongoose> {
-  const uri = process.env.MONGODB_URI || process.env.MONGO_URI;
-  if (!uri) {
-    throw new Error('Missing MONGODB_URI / MONGO_URI environment variable');
-  }
+const MONGO_URI = process.env.MONGO_URI as string;
 
-  if (mongoose.connection.readyState >= 1) {
-    return mongoose;
-  }
+if (!MONGO_URI) {
+  throw new Error("Please define MONGO_URI in .env.local");
+}
 
-  return mongoose.connect(uri, {
-    // useNewUrlParser / useUnifiedTopology are defaults in newer mongoose
-  });
+export async function dbConnect() {
+  if (mongoose.connection.readyState >= 1) return;
+
+  await mongoose.connect(MONGO_URI);
 }
